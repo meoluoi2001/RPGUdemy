@@ -9,7 +9,15 @@ namespace RPG.Combat
 
         public void takeDamage(float damage)
         {
-            health -= damage;
+            if (health < damage)
+            {
+                health = 0;
+            }
+            else
+            {
+                health -= damage;
+            }
+
         }
     }
 
