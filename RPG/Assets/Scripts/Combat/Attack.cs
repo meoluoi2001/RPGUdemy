@@ -13,6 +13,8 @@ namespace RPG.Combat
         private float attackSpeed = 1f;
         private ActionScheduler myActionScheduler;
         Transform target;
+        private float attackCD = 0;
+        [SerializeField] private float attackCDConfig;
 
         private void Start()
         {
@@ -28,7 +30,11 @@ namespace RPG.Combat
                 }
                 else
                 {
-                    attackAnimation();
+                    if (attackCD < Time.time)
+                    {
+                        attackAnimation();
+                    }
+                    
                     GetComponent<Movement>().Cancel();
                 }
             }
@@ -41,12 +47,13 @@ namespace RPG.Combat
         }
 
         public void Cancel()
-        {
+        { 
             target = null;
         }
 
         private void attackAnimation()
         {
+            attackCD = Time.time + attackCDConfig;
             GetComponent<Animator>().SetTrigger("Attacking");
         }
 
