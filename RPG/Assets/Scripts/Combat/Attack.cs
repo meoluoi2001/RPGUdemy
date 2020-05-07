@@ -10,7 +10,6 @@ namespace RPG.Combat
     {
         [SerializeField] private float attackRange = 2f;
 
-        private float attackSpeed = 1f;
         private ActionScheduler myActionScheduler;
         Transform target;
         private float attackCD = 0;
