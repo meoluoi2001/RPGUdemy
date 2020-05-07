@@ -16,6 +16,7 @@ namespace RPG.Combat
             else
             {
                 health -= damage;
+                print(health);
             }
 
         }
