@@ -9,7 +9,7 @@ namespace RPG.Combat
     public class Attack : MonoBehaviour, IAction
     {
         [SerializeField] private float attackRange = 2f;
-
+        private float attackDamage = 5;
         private ActionScheduler myActionScheduler;
         Transform target;
         private float attackCD = 0;
@@ -59,7 +59,7 @@ namespace RPG.Combat
         // Animation Event
         void Hit()
         {
-
+            target.GetComponent<Health>().takeDamage(attackDamage);
         }
     }
 }
