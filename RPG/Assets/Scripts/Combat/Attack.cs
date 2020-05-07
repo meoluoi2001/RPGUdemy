@@ -13,6 +13,8 @@ namespace RPG.Combat
         private float attackSpeed = 1f;
         private ActionScheduler myActionScheduler;
         Transform target;
+        IEnumerator attacking;
+        private bool startedAnimation = false;
         private void Start()
         {
             myActionScheduler = GetComponent<ActionScheduler>();
@@ -27,6 +29,12 @@ namespace RPG.Combat
                 }
                 else
                 {
+                    if (!startedAnimation)
+                    {
+                        attacking = startAttacking();
+                        StartCoroutine(attacking);
+                        startedAnimation = true;
+                    }
                     GetComponent<Movement>().Cancel();
                 }
             }
@@ -40,6 +48,12 @@ namespace RPG.Combat
 
         public void Cancel()
         {
+            if (startedAnimation)
+            {
+                StopCoroutine(attacking);
+                startedAnimation = false;
+            }
+
             target = null;
         }
 
