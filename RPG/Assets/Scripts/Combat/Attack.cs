@@ -10,6 +10,7 @@ namespace RPG.Combat
     {
         [SerializeField] private float attackRange = 2f;
 
+        private float attackSpeed = 1f;
         private ActionScheduler myActionScheduler;
         Transform target;
         private void Start()
@@ -40,6 +41,15 @@ namespace RPG.Combat
         public void Cancel()
         {
             target = null;
+        }
+
+        IEnumerator startAttacking()
+        {
+            while (true)
+            {
+                GetComponent<Animator>().SetTrigger("Attacking");
+                yield return new WaitForSeconds(1f/attackSpeed);
+            }
         }
 
         // Animation Event
