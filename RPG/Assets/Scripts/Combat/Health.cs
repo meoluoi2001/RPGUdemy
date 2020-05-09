@@ -16,6 +16,7 @@ namespace RPG.Combat
             if (health <= damage)
             {
                 health = 0;
+                GetComponent<CombatTarget>().enabled = false;
                 GetComponent<Animator>().SetTrigger("isDeath");
             }
             else
