@@ -9,9 +9,14 @@ namespace RPG.Combat
 
         public void takeDamage(float damage)
         {
-            if (health < damage)
+            if (health == 0)
+            {
+                return;
+            }
+            if (health <= damage)
             {
                 health = 0;
+                GetComponent<Animator>().SetTrigger("isDeath");
             }
             else
             {
