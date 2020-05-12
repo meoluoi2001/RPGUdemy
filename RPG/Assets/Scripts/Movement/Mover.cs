@@ -28,6 +28,7 @@ namespace RPG.Movement
 
         void Update()
         {
+            myMeshAgent.enabled = !GetComponent<Health>().IsDead();
             UpdateAnimation();
         }
 
