@@ -1,65 +1,72 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using RPG.Moment;
+﻿using UnityEngine;
+using RPG.Movement;
 using RPG.Core;
 
 namespace RPG.Combat
 {
     public class Attack : MonoBehaviour, IAction
     {
-        [SerializeField] private float attackRange = 2f;
-        private float attackDamage = 5;
-        private ActionScheduler myActionScheduler;
-        Transform target;
-        private float attackCD = 0;
-        [SerializeField] private float attackCDConfig;
+        [SerializeField] float weaponRange = 1f;
+        [SerializeField] float timeBetweenAttacks = 1f;
+        [SerializeField] float weaponDamage = 5f;
 
-        private void Start()
+        Health target;
+        float attackCD = 1f ;
+
+        private void Update()
         {
-            myActionScheduler = GetComponent<ActionScheduler>();
-        }
-        void Update()
-        {
-            if (target != null)
+            attackCD += Time.deltaTime;
+
+            if (target == null) return;
+            if (target.IsDead()) return;
+
+            if (IsInAttackRange())
             {
-                if (Vector3.Distance(this.transform.position, target.position) > attackRange)
-                {
-                    GetComponent<Movement>().MoveToDirection(target.position);
-                }
-                else
-                {
-                    if (attackCD < Time.time)
-                    {
-                        attackAnimation();
-                    }
-                    
-                    GetComponent<Movement>().Cancel();
-                }
+                GetComponent<Mover>().MoveToDirection(target.transform.position);
+            }
+            else
+            {
+                GetComponent<Mover>().Cancel();
+                AttackBehaviour();
             }
         }
 
-        public void AttackTarget(CombatTarget combatTarget)
+        private void AttackBehaviour()
         {
-            myActionScheduler.StartAction(this);
-            target = combatTarget.transform;
+            this.transform.LookAt(target.transform);
+            if (attackCD > timeBetweenAttacks)
+            {
+                GetComponent<Animator>().SetTrigger("attack");
+                GetComponent<Animator>().ResetTrigger("stopAttack");
+                attackCD = 0;
+            }
+        }
+
+        public bool CanAttack()
+        {
+            return !target.IsDead();
+        }
+
+        void Hit()
+        {
+            target.takeDamage(weaponDamage);
+        }
+
+        private bool IsInAttackRange()
+        {
+            return Vector3.Distance(this.transform.position, target.transform.position) > weaponRange;
+        }
+
+        public void AttackTarget(GameObject combatTarget)
+        {
+            GetComponent<ActionScheduler>().StartAction(this);
+            target = combatTarget.GetComponent<Health>();
         }
 
         public void Cancel()
-        { 
+        {
+            GetComponent<Animator>().SetTrigger("stopAttack");
             target = null;
-        }
-
-        private void attackAnimation()
-        {
-            attackCD = Time.time + attackCDConfig;
-            GetComponent<Animator>().SetTrigger("Attacking");
-        }
-
-        // Animation Event
-        void Hit()
-        {
-            target.GetComponent<Health>().takeDamage(attackDamage);
         }
     }
 }

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace RPG.Moment
+namespace RPG.Movement
 {
-    public class Movement : MonoBehaviour, IAction
+    public class Mover : MonoBehaviour, IAction
     {
         //Config
 
@@ -39,9 +39,8 @@ namespace RPG.Moment
 
         public void MoveToDirection(Vector3 destination)
         {
-
-            myMeshAgent.isStopped = false;
             myMeshAgent.destination = destination;
+            myMeshAgent.isStopped = false;
         }
 
         public void Cancel()
@@ -51,7 +50,6 @@ namespace RPG.Moment
 
         private void UpdateAnimation()
         {
-
             Vector3 localVelocity = transform.InverseTransformDirection(myMeshAgent.velocity);
             myCharactorAnimator.SetFloat("MoveState", Mathf.Abs(localVelocity.z));
         }

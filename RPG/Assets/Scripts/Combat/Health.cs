@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.AI;
 
 namespace RPG.Combat
 {
@@ -7,17 +8,20 @@ namespace RPG.Combat
     {
         [SerializeField] private float health = 100f;
 
+        bool death = false;
         public void takeDamage(float damage)
         {
-            if (health == 0)
+            if (death)
             {
                 return;
             }
             if (health <= damage)
             {
                 health = 0;
-                GetComponent<CombatTarget>().enabled = false;
+                death = true;
                 GetComponent<Animator>().SetTrigger("isDeath");
+/*                GetComponent<CapsuleCollider>().enabled = false;*/
+                GetComponent<NavMeshAgent>().enabled = false;
             }
             else
             {
@@ -25,6 +29,11 @@ namespace RPG.Combat
                 print(health);
             }
 
+        }
+
+        public bool IsDead()
+        {
+            return death;
         }
     }
 
