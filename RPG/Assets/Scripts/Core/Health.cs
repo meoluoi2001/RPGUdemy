@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.AI;
 
-namespace RPG.Combat
+namespace RPG.Core
 {
     public class Health : MonoBehaviour
     {
@@ -20,9 +20,9 @@ namespace RPG.Combat
                 health = 0;
                 death = true;
                 GetComponent<Animator>().SetTrigger("isDeath");
-/*                GetComponent<CapsuleCollider>().enabled = false;*/
-                GetComponent<NavMeshAgent>().enabled = false;
-            }
+                GetComponent<ActionScheduler>().CancelCurrentAction();
+/*                GetComponent<NavMeshAgent>().enabled = false;
+*/            }
             else
             {
                 health -= damage;

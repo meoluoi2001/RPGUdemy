@@ -7,6 +7,7 @@ using RPG.Combat;
 // Unity
 using UnityEngine;
 using System;
+using RPG.Core;
 
 namespace RPG.Controller
 {
@@ -27,6 +28,8 @@ namespace RPG.Controller
         // Update is called once per frame
         void Update()
         {
+            if (GetComponent<Health>().IsDead()) return;
+
             if (InteractWithCombat()) return;
             if (InteractWithMovement()) return;            
         }

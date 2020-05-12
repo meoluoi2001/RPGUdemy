@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using RPG.Movement;
 using RPG.Combat;
-
+using RPG.Core;
 
 namespace RPG.Controller
 {
@@ -27,6 +27,8 @@ namespace RPG.Controller
         // Update is called once per frame
         void Update()
         {
+            if (GetComponent<Health>().IsDead() || player.GetComponent<Health>().IsDead()) return;
+
             if (Vector3.Distance(this.transform.position, player.transform.position) < chaseDistance)
             {
                 if (Vector3.Distance(this.transform.position, player.transform.position) < attackRange)
