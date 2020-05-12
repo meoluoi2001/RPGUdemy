@@ -27,7 +27,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chaseDistance: 5
-  enemySpeed: 1
+  patrolSpeed: 3
+  chasingSpeed: 4
+  patrolPath: {fileID: 0}
 --- !u!1001 &1883362587245311627
 PrefabInstance:
   m_ObjectHideFlags: 0

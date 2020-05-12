@@ -5,6 +5,7 @@ using UnityEngine;
 using RPG.Movement;
 using RPG.Combat;
 using RPG.Core;
+using UnityEngine.AI;
 
 namespace RPG.Controller
 {
@@ -12,15 +13,34 @@ namespace RPG.Controller
     public class AIController : MonoBehaviour
     {
         [SerializeField] float chaseDistance = 5f;
-        [SerializeField] float enemySpeed = 1f;
+        [SerializeField] float patrolSpeed = 1f;
+        [SerializeField] float chasingSpeed = 4f;
+        [SerializeField] PatrolPath patrolPath;
 
         private float attackRange = 1f;
+        private int currentWaypoint = 0;
+
+        private Vector3 guardLocation;
+        private Quaternion guardRotation;
 
         private GameObject player;
+        private float timeSinceLastSeenPlayer;
+        private float timeSinceWaitPoint = Mathf.Infinity;
+        private float timeToMove = 3f;
 
         // Start is called before the first frame update
         void Start()
         {
+            timeSinceLastSeenPlayer = Mathf.Infinity;
+            if (patrolPath == null)
+            {
+                guardLocation = transform.position;
+            } else
+            {
+                guardLocation = patrolPath.GetWayPoint(currentWaypoint);
+            }
+            
+            guardRotation = transform.rotation;
             player = GameObject.FindGameObjectWithTag("Player");
         }
 
@@ -29,18 +49,67 @@ namespace RPG.Controller
         {
             if (GetComponent<Health>().IsDead() || player.GetComponent<Health>().IsDead()) return;
 
-            if (Vector3.Distance(this.transform.position, player.transform.position) < chaseDistance)
+            if (DistanceFromPlayer() < chaseDistance)
             {
-                if (Vector3.Distance(this.transform.position, player.transform.position) < attackRange)
+                timeSinceLastSeenPlayer = 0;
+                AttackBahaviour();
+            }
+            else if (timeSinceLastSeenPlayer < timeToMove)
+            {
+                GetComponent<ActionScheduler>().CancelCurrentAction();
+            }
+            else
+            {
+                PatrolBehaviour();
+            }
+
+            UpdateTimer();
+        }
+
+        private void UpdateTimer()
+        {
+            timeSinceLastSeenPlayer += Time.deltaTime;
+
+        }
+
+        private void AttackBahaviour()
+        {
+            GetComponent<NavMeshAgent>().speed = chasingSpeed;
+            if (Vector3.Distance(this.transform.position, player.transform.position) < attackRange)
+            {
+                AttackPlayer();
+            }
+            else
+            {
+                GetComponent<Attack>().Cancel();
+                ChasePlayer();
+            }
+        }
+
+        private float DistanceFromPlayer()
+        {
+            return Vector3.Distance(this.transform.position, player.transform.position);
+        }
+
+        private void PatrolBehaviour()
+        {         
+            GetComponent<NavMeshAgent>().speed = patrolSpeed;
+            GetComponent<Mover>().MoveToDirection(guardLocation);
+
+            if (Vector3.Distance(transform.position, guardLocation) < 0.1f)
+            {
+                transform.rotation = guardRotation;
+                if (GetComponent<NavMeshAgent>().velocity == Vector3.zero)
                 {
-                    AttackPlayer();
-                } 
-                else
-                {
-                    GetComponent<Attack>().Cancel();
-                    ChasePlayer();
+                    timeSinceWaitPoint += Time.deltaTime;
                 }
-                
+            }
+
+            if (patrolPath != null && timeSinceWaitPoint > timeToMove)
+            {
+                timeSinceWaitPoint = 0;
+                currentWaypoint = currentWaypoint < patrolPath.transform.childCount - 1 ? currentWaypoint + 1 : 0;
+                guardLocation = patrolPath.GetWayPoint(currentWaypoint);
             }
         }
 
@@ -53,6 +122,12 @@ namespace RPG.Controller
         private void ChasePlayer()
         {
             GetComponent<Mover>().MoveToDirection(player.transform.position);
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(transform.position, chaseDistance);
         }
     }
 }
