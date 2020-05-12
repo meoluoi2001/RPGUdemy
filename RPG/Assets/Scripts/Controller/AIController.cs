@@ -32,8 +32,10 @@ namespace RPG.Controller
                 if (Vector3.Distance(this.transform.position, player.transform.position) < attackRange)
                 {
                     AttackPlayer();
-                } else
+                } 
+                else
                 {
+                    GetComponent<Attack>().Cancel();
                     ChasePlayer();
                 }
                 
