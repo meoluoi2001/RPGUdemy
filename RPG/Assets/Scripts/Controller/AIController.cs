@@ -96,9 +96,12 @@ namespace RPG.Controller
             GetComponent<NavMeshAgent>().speed = patrolSpeed;
             GetComponent<Mover>().MoveToDirection(guardLocation);
 
-            if (Vector3.Distance(transform.position, guardLocation) < 0.1f)
+            if (Vector3.Distance(transform.position, guardLocation) < 1f)
             {
-                transform.rotation = guardRotation;
+                if (patrolPath == null)
+                {
+                    transform.rotation = guardRotation;
+                }
                 if (GetComponent<NavMeshAgent>().velocity == Vector3.zero)
                 {
                     timeSinceWaitPoint += Time.deltaTime;
